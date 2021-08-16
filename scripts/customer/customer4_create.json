@@ -1,0 +1,16 @@
+{
+  "name": "Customer 3 Name",
+  "commercialName": "Customer 3 Commercial Name",
+  "cnpj": "00.000.000/2020-03",
+  "mobilePhone": "(XX) XXX-XXX-XXX",
+  "email": "supplier1@email.com",
+  "active": true,
+  "address": {
+    "street": "Customer 4 Street Name",
+    "cep": "XXXXX-XXX",
+    "city": "Customer 4 City",
+    "number": "Customer 4 building number",
+    "neighborhood": "neighborhood"
+  },
+  "comment": "Comments related to Customer 3"
+}

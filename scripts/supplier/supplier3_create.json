@@ -1,0 +1,16 @@
+{
+  "name": "Supplier 3 Name",
+  "commercialName": "Supplier 3 Commercial Name",
+  "cnpj": "XX.XXX.XXX/YYYY-Z3",
+  "mobilePhone": "(XX) XXX-XXX-XXX",
+  "email": "supplier3@email.com",
+  "active": true,
+  "address": {
+    "street": "Supplier 3 Street Name",
+    "cep": "XXXXX-XXX",
+    "city": "Supplier 3 City",
+    "number": "Supplier 3 building number",
+    "neighborhood": "neighborhood"
+  },
+  "comment": "Comments related to Supplier 3"
+}

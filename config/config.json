@@ -1,0 +1,29 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "Bludakeia1**",
+    "database": "mrm",
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": 5432,
+    "logging": true
+  },
+  "test": {
+    "username": "postgres",
+    "password": "Bludakeia1**",
+    "database": "mrm",
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": 5432,
+    "logging": true
+  },
+  "production": {
+    "username": "postgres",
+    "password": "Bludakeia1**",
+    "database": "mrm",
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": 5432,
+    "logging": true
+  }
+}

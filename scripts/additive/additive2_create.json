@@ -1,0 +1,19 @@
+{
+  "startDate": "2021-05-10",
+  "endDate": "2021-06-10",
+  "approvalDate": "2021-05-05",
+  "paymentDueDate": "2021-06-20",
+  "paidAt": null,
+  "receiptUrl": "urlforthereceit.com",
+  "contractUrl": "urlforthecontract.com",
+  "value": 1300.10,
+  "status": "APPROVED",
+  "comment": "Additive 1",
+  "invoiceStatus": "pendente",
+  "invoiceUrl": "invoiceurl.com",
+  "period": 31,
+  "paymentType": "CREDIT",
+  "paymentComment": "Payment comment",
+  "installments": 1,
+  "rentContractId": 1
+}

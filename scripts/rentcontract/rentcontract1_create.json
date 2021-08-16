@@ -1,0 +1,40 @@
+{
+  "startDate": "2021-03-10",
+  "endDate": "2021-04-10",
+  "approvalDate": "2021-04-05",
+  "paymentDueDate": "2021-05-20",
+  "period": 30,
+  "paidAt": null,
+  "receiptUrl": "urlforthereceit.com",
+  "contractUrl": "urlforthecontract.com",
+  "durationMode": "30DAYS",
+	"paymentType": "Boleto",
+  "paymentComment": "Payment comment for Contract 1",
+  "workingHours": "8H",
+  "deliveryMode": "DELIVERY",
+  "installments": "1",
+  "additivesEndDate": "2021-05-10",
+  "deliveryCost": 50,
+  "invoiceStatus": "pending",
+  "invoiceUrl": "invoiceurl.com",
+  "value": 1300.29,
+  "status": "APPROVED",
+  "customerId": 1,
+  "comment": "Contract 1",
+  "itemRentals": [
+    {
+      "leftAt": "2021-04-10",
+      "ReturnedAt": null,
+      "value": 100,
+      "stockItemId": 1,
+      "comment": "itemRental 1"
+    },
+    {
+      "leftAt": "2021-04-10",
+      "ReturnedAt": null,
+      "value": 200,
+      "stockItemId": 2,
+      "comment": "itemRental 2"
+    }
+  ]
+}
