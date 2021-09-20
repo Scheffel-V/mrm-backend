@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   RentContract.init({
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE,
+    active: DataTypes.BOOLEAN,
     approvalDate: DataTypes.DATE,
     paymentDueDate: DataTypes.DATE,
     paidAt: DataTypes.DATE,

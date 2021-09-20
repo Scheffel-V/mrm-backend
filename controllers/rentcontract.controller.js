@@ -29,6 +29,7 @@ exports.create = async (req, res) => {
   db.rentContract.create({
     startDate: req.body.startDate,
     endDate: req.body.endDate,
+    active: req.body.active,
     approvalDate: req.body.approvalDate,
     paymentDueDate: req.body.paymentDueDate,
     paidAt: req.body.paidAt,
@@ -157,6 +158,7 @@ exports.update = async (req, res) => {
   const newAttributes = {
     startDate: req.body.startDate,
     endDate: req.body.endDate,
+    active: req.body.active,
     approvalDate: req.body.approvalDate,
     paymentDueDate: req.body.paymentDueDate,
     paidAt: req.body.paidAt,
@@ -201,6 +203,9 @@ exports.getActive = async (req, res) => {
       ],
       status: {
         [Op.or]: ["APPROVED", "ON GOING"]
+      },
+      active: {
+        [Op.eq]: true
       }
     },
     include: [db.customer, db.additive]

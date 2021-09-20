@@ -238,7 +238,8 @@ exports.getCustomersWithActiveContracts = async (req, res) => {
   where
     rentContract."startDate" <= CURRENT_TIMESTAMP AND
     (rentContract."endDate" >= CURRENT_TIMESTAMP OR rentContract."additivesEndDate" >= CURRENT_TIMESTAMP) AND
-    (rentContract."status" = 'APPROVED' OR rentContract."status" = 'ON GOING')
+    (rentContract."status" = 'APPROVED' OR rentContract."status" = 'ON GOING') AND
+    (rentContract."active" = true)
   order by
     rentContract."startDate"
     desc
