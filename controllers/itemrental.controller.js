@@ -15,6 +15,17 @@ exports.create = (req, res) => {
     stockItemId: req.body.stockItemId,
     comment: req.body.comment
   }).then(createdItem => {
+    db.stockItem.update({
+      status: "RENTED"
+    }, {
+      where: {
+        id: req.body.stockItemId
+      }
+    });
+    db.stockItemEvent.create({
+      stockItemId: req.body.stockItemId,
+      status: "RENTED"
+    })
     res.status(StatusCodes.CREATED);
     res.send(createdItem);
   }).catch((err) => {
