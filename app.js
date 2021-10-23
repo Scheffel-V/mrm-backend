@@ -21,6 +21,7 @@ const rentContractRoute = require("./routes/rentcontract.route");
 const stockItemEventRoute = require("./routes/stockitemevent.route");
 const itemRentalRoute = require("./routes/itemrental.route");
 const additiveRoute = require("./routes/additive.route");
+const imageRoute = require("./routes/image.route");
 const dbRoute = require("./routes/db.route");
 
 addRoutesToTheApp();
@@ -45,6 +46,7 @@ function addRoutesToTheApp() {
   app.use("/api/stockitemevents", stockItemEventRoute);
   app.use("/api/itemrentals", itemRentalRoute);
   app.use("/api/additives", additiveRoute);
+  app.use("/api/image", imageRoute);
   app.use("/db", dbRoute);
   logger.info("Routes successfully added");
 }
