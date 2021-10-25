@@ -65,4 +65,21 @@ exports.get_contract_number_from_rent_contract = async (rentContractId) => {
   return contractNumber[0].contractNumber;
 }
 
+exports.get_new_additive_number_from_rent_contract = async (rentContractId) => {
+  const query = `
+  select
+    MAX(a."additiveNumber")
+  from
+    "rentContracts"  rc full join
+    "additives" a on (a."rentContractId" = rc."id")
+  where
+    rc."id" = ${rentContractId}
+  `
+
+  maxAdditiveNumber = await executeSelect(query);
+  newAdditiveNumber = maxAdditiveNumber[0].max == null ? 1 : maxAdditiveNumber[0].max + 1
+  console.log("NEW ADDITIVE NUMBER:" + newAdditiveNumber)
+  return newAdditiveNumber;
+}
+
 exports.executeSelect = executeSelect;

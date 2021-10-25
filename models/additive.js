@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Additive.init({
+    additiveNumber: DataTypes.INTEGER,
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE,
     approvalDate: DataTypes.DATE,

@@ -9,6 +9,7 @@ const { addXTotalCount } = require("./utils/headerHelper");
 
 exports.create = async (req, res) => {
   db.additive.create({
+    additiveNumber: await helpers.get_new_additive_number_from_rent_contract(req.body.rentContractId),
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     approvalDate: req.body.approvalDate,
@@ -114,6 +115,7 @@ exports.update = async (req, res) => {
   var additive = await db.additive.findOne(filter);
 
   const newAttributes = {
+    additiveNumber: req.body.additiveNumber,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     approvalDate: req.body.approvalDate,
