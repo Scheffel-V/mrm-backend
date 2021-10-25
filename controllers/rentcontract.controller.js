@@ -208,7 +208,14 @@ exports.getActive = async (req, res) => {
         [Op.eq]: true
       }
     },
-    include: [db.customer, db.additive]
+    include: [
+      db.customer, 
+      db.additive,
+      {
+        model: db.itemRental,
+        include: [db.stockItem]
+      }
+    ]
   }).then(results => {
       res.send(results);
   }).catch((err) => {
