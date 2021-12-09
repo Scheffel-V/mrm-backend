@@ -5,6 +5,8 @@ const PORT = 3134;
 const cors = require("cors");
 const morgan = require('morgan');
 const logger = require("./utils/logger");
+require("dotenv-safe").config();
+const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +24,9 @@ const stockItemEventRoute = require("./routes/stockitemevent.route");
 const itemRentalRoute = require("./routes/itemrental.route");
 const additiveRoute = require("./routes/additive.route");
 const imageRoute = require("./routes/image.route");
+const authenticationRoute = require("./routes/authentication.route");
 const dbRoute = require("./routes/db.route");
+const { authenticateToken } = require("./controllers/authentication.controller");
 
 addRoutesToTheApp();
 
@@ -37,16 +41,17 @@ db.sequelize.sync().then(() => {
 function addRoutesToTheApp() {
   logger.info("Adding routes...");
 
-  app.use("/api/projetodebd", projetoDeBDRoute);
-  app.use("/api/addresses", addressRoute);
-  app.use("/api/customers", customerRoute);
-  app.use("/api/stockItems", itemRoute);
-  app.use("/api/suppliers", supplierRoute);
-  app.use("/api/rentcontracts", rentContractRoute);
-  app.use("/api/stockitemevents", stockItemEventRoute);
-  app.use("/api/itemrentals", itemRentalRoute);
-  app.use("/api/additives", additiveRoute);
-  app.use("/api/image", imageRoute);
-  app.use("/db", dbRoute);
+  app.use("/api/projetodebd", authenticateToken, projetoDeBDRoute);
+  app.use("/api/addresses", authenticateToken, addressRoute);
+  app.use("/api/customers", authenticateToken, customerRoute);
+  app.use("/api/stockItems", authenticateToken, itemRoute);
+  app.use("/api/suppliers", authenticateToken, supplierRoute);
+  app.use("/api/rentcontracts", authenticateToken, rentContractRoute);
+  app.use("/api/stockitemevents", authenticateToken, stockItemEventRoute);
+  app.use("/api/itemrentals", authenticateToken, itemRentalRoute);
+  app.use("/api/additives", authenticateToken, additiveRoute);
+  app.use("/api/image", authenticateToken, imageRoute);
+  app.use("/api/authentication", authenticationRoute);
+  app.use("/db", authenticateToken, dbRoute);
   logger.info("Routes successfully added");
 }

@@ -78,7 +78,14 @@ exports.create = async (req, res) => {
 exports.findAll = (req, res) => {
   if (hasInvalidQuery(req, res, db.rentContract)) return;
 
-  db.rentContract.findAll({include: [db.customer]})
+  db.rentContract.findAll({
+    where: {
+      active: {
+        [Op.eq]: true
+      }
+    },
+    include: [db.customer]
+  })
   .then(items => {
     res.headers = addXTotalCount(res, items.length);
     console.log(JSON.stringify(res.headers));
@@ -197,10 +204,6 @@ exports.getActive = async (req, res) => {
       startDate: {
         [Op.lte]: moment(),
       },
-      [Op.or]: [
-        { endDate: { [Op.gte]: moment() } },
-        { additivesEndDate: { [Op.gte]: moment() } }
-      ],
       status: {
         [Op.or]: ["APPROVED", "ON GOING"]
       },
