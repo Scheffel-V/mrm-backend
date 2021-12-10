@@ -7,6 +7,7 @@ const handleApiError = require("./utils/apiErrorHandler");
 const { hasInvalidQuery } = require("./utils/queryValidator");
 const { isInvalidId, isIdNotPresent } = require("./utils/genericBodyValidator");
 const { addXTotalCount } = require("./utils/headerHelper");
+const { getActive } = require("./rentcontract.controller");
 
 
 exports.create = async (req, res) => {
@@ -133,7 +134,33 @@ exports.deleteOne = async (req, res) => {
     db.rentContract.destroy({
       where: {id: req.params.id}
     })
-    .then(() => {
+    .then(async () => {
+      const filter = {
+        where: { id: req.params.id },
+        include: [
+          {
+            model: db.itemRental,
+            include: [db.stockItem]
+          }
+        ]
+      };
+    
+      var rentContract = await db.rentContract.findOne(filter);
+      var itemRentals = rentContract.itemRentals;
+      for(var i = 0; i < itemRentals.length; i++) {
+        db.stockItem.update({
+          status: "INVENTORY"
+        }, {
+          where: {
+            id: itemRentals[i].stockItemId
+          }
+        });
+        db.stockItemEvent.create({
+          stockItemId: itemRentals[i].stockItemId,
+          status: "INVENTORY"
+        })
+      };
+
       res.status(StatusCodes.OK);
       res.send()
     });
@@ -190,7 +217,34 @@ exports.update = async (req, res) => {
   }
 
   rentContract.update(newAttributes)
-  .then(updatedItem => {
+  .then(async updatedItem => {
+    if (updatedItem.dataValues.status === "FINISHED" || !updatedItem.dataValues.active) {
+      const filter = {
+        where: { id: updatedItem.dataValues.id },
+        include: [
+          {
+            model: db.itemRental,
+            include: [db.stockItem]
+          }
+        ]
+      };
+    
+      var rentContract = await db.rentContract.findOne(filter);
+      var itemRentals = rentContract.itemRentals;
+      for(var i = 0; i < itemRentals.length; i++) {
+        db.stockItem.update({
+          status: "INVENTORY"
+        }, {
+          where: {
+            id: itemRentals[i].stockItemId
+          }
+        });
+        db.stockItemEvent.create({
+          stockItemId: itemRentals[i].stockItemId,
+          status: "INVENTORY"
+        })
+      };
+    }
     res.status(StatusCodes.CREATED);
     res.send(updatedItem);
   }).catch((err) => {
@@ -305,4 +359,90 @@ exports.getRevenueFromPeriod = async (req, res) => {
     "revenue": rentContractsRevenue + additivesRevenue,
   }
   res.send(result)
+}
+
+exports.setOnGoingByStockItemId = async (req, res) => {
+  var activeRentContracts = await db.rentContract.findAll({
+    where: {
+      startDate: {
+        [Op.lte]: moment(),
+      },
+      status: {
+        [Op.or]: ["APPROVED", "ON GOING"]
+      },
+      active: {
+        [Op.eq]: true
+      }
+    },
+    include: [
+      {
+        model: db.itemRental,
+        include: [db.stockItem]
+      }
+    ]
+  });
+
+  for (var i = 0; i < activeRentContracts.length; i++) {
+    var itemRentals = activeRentContracts[i].itemRentals;
+    for(var j = 0; j < itemRentals.length; j++) {
+      if (itemRentals[j].stockItemId == req.stockItemId) {
+        const filter = {
+          where: { id: activeRentContracts[i].id }
+        };
+      
+        var rentContract = await db.rentContract.findOne(filter);
+        await rentContract.update({
+          status: "ON GOING",
+        })
+      }
+    };
+  };
+}
+
+exports.setFinishedByStockItemId = async (req, res) => {
+  var activeRentContracts = await db.rentContract.findAll({
+    where: {
+      startDate: {
+        [Op.lte]: moment(),
+      },
+      status: {
+        [Op.or]: ["APPROVED", "ON GOING"]
+      },
+      active: {
+        [Op.eq]: true
+      }
+    },
+    include: [
+      {
+        model: db.itemRental,
+        include: [db.stockItem]
+      }
+    ]
+  });
+
+  for (var i = 0; i < activeRentContracts.length; i++) {
+    var itemRentals = activeRentContracts[i].itemRentals;
+    for(var j = 0; j < itemRentals.length; j++) {
+      if (itemRentals[j].stockItemId == req.stockItemId) {
+        const filter = {
+          where: { id: activeRentContracts[i].id }
+        };
+
+        shouldSetToFinished = true;
+        for (var k = 0; k < itemRentals.length; k++) {
+          if (itemRentals[k].stockItem.status != "INVENTORY" && itemRentals[k].stockItem.status != "MAINTENANCE") {
+            shouldSetToFinished = false;
+            break;
+          }
+        }
+      
+        if (shouldSetToFinished) {
+          var rentContract = await db.rentContract.findOne(filter);
+          await rentContract.update({
+            status: "FINISHED",
+          })
+        }
+      }
+    };
+  };
 }

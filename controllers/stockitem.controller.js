@@ -4,6 +4,7 @@ const handleApiError = require("./utils/apiErrorHandler");
 const { hasInvalidQuery } = require("./utils/queryValidator");
 const { isInvalidId, isIdNotPresent, getModelValueIfUndefined } = require("./utils/genericBodyValidator");
 const { addXTotalCount } = require("./utils/headerHelper");
+const { setOnGoingByStockItemId, setFinishedByStockItemId } = require("./rentcontract.controller");
 
 exports.create = (req, res) => {
   db.stockItem.create({
@@ -133,7 +134,7 @@ exports.update = async (req, res) => {
   const oldStatus = stockItem.status;
 
   stockItem.update(newAttributes)
-  .then(updatedItem => {
+  .then(async updatedItem => {
     if(oldStatus != updatedItem.status) {
       db.stockItemEvent.create({
         status: updatedItem.status,
@@ -141,6 +142,13 @@ exports.update = async (req, res) => {
         stockItemId: updatedItem.id
       });
     }
+
+    if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
+      await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
+    } else if (oldStatus == "CUSTOMER" && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE")) {
+      await setFinishedByStockItemId({ stockItemId: updatedItem.id });
+    }
+
     res.status(StatusCodes.CREATED);
     res.send(updatedItem);
   }).catch((err) => {
@@ -226,7 +234,7 @@ exports.updateByCode = async (req, res) => {
   const oldStatus = stockItem.status;
 
   stockItem.update(newAttributes)
-  .then(updatedItem => {
+  .then(async updatedItem => {
     if(oldStatus != updatedItem.status) {
       db.stockItemEvent.create({
         status: updatedItem.status,
@@ -234,6 +242,13 @@ exports.updateByCode = async (req, res) => {
         stockItemId: updatedItem.id
       });
     }
+
+    if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
+      await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
+    } else if (oldStatus == "CUSTOMER" && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE")) {
+      await setFinishedByStockItemId({ stockItemId: updatedItem.id });
+    }
+
     res.status(StatusCodes.CREATED);
     res.send(updatedItem);
   }).catch((err) => {
