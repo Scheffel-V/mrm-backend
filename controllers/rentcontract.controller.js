@@ -85,6 +85,9 @@ exports.findAll = (req, res) => {
         [Op.eq]: true
       }
     },
+    order: [
+      ['id', 'DESC']
+    ],
     include: [db.customer]
   })
   .then(items => {
@@ -265,6 +268,9 @@ exports.getActive = async (req, res) => {
         [Op.eq]: true
       }
     },
+    order: [
+      ['id', 'DESC']
+    ],
     include: [
       db.customer, 
       db.additive,
