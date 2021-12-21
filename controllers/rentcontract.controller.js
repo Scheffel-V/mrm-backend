@@ -9,7 +9,6 @@ const { isInvalidId, isIdNotPresent } = require("./utils/genericBodyValidator");
 const { addXTotalCount } = require("./utils/headerHelper");
 const { getActive } = require("./rentcontract.controller");
 
-
 exports.create = async (req, res) => {
   var itemRentals = [];
   if(req.body.itemRentals) {
@@ -363,6 +362,61 @@ exports.getRevenueFromPeriod = async (req, res) => {
 
   result = {
     "revenue": rentContractsRevenue + additivesRevenue,
+    "start_date": req.params.startDate,
+    "end_date": req.params.end_date
+  }
+  res.send(result)
+}
+
+exports.getRevenueFromLastTwelveMonths = async (req, res) => {
+  var revenues = []
+  let currentDate = new Date()
+  let currentMonth = (currentDate.getMonth() + 1).toString()
+  let currentYear = currentDate.getFullYear().toString()
+  let monthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
+
+  if (currentMonth.length === 1) {
+    currentMonth = '0' + currentMonth
+  }
+
+  for (var i = 0; i < 12; i++) {
+    rentContractsRevenue = await db.rentContract.sum("value", {
+      where: {
+        paidAt: {
+          [Op.and]: [
+            { [Op.gte]: `${currentYear}-${currentMonth}-01` },
+            { [Op.lte]: `${currentYear}-${currentMonth}-${monthLastDay}` }
+          ]
+        }
+      }
+    });
+  
+    additivesRevenue = await db.additive.sum("value", {
+      where: {
+        paidAt: {
+          [Op.and]: [
+            { [Op.gte]: `${currentYear}-${currentMonth}-01` },
+            { [Op.lte]: `${currentYear}-${currentMonth}-${monthLastDay}` }
+          ]
+        }
+      }
+    });
+
+    revenues.push(rentContractsRevenue + additivesRevenue)
+
+    currentDate.setMonth(currentDate.getMonth() - 1)
+    currentMonth = (currentDate.getMonth() + 1).toString()
+
+    if (currentMonth.length === 1) {
+      currentMonth = '0' + currentMonth
+    }
+
+    currentYear = currentDate.getFullYear().toString()
+    monthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
+  }
+
+  result = {
+    "revenues": revenues
   }
   res.send(result)
 }
