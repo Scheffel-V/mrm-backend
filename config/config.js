@@ -4,7 +4,7 @@ module.exports = {
     development:
     {
         username: "postgres",
-        password: "Bludakeia1**",
+        password: "user",
         database: "mrm",
         host: "localhost",
         dialect: "postgres",
