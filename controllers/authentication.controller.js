@@ -43,7 +43,19 @@ function generateAccessToken(id) {
 }
 
 function authenticateUser(username, password) {
-  if(username === 'luiz' && password === '123') {
+  if(username === 'natalia' && password === 'Gma2009adm') {
+    return true;
+  }
+
+  if(username === 'gilsandro' && password === 'Gma2009adm') {
+    return true;
+  }
+
+  if(username === 'rubia' && password === 'Gma2009') {
+    return true;
+  }
+
+  if(username === 'dev' && password === 'dev') {
     return true;
   }
 

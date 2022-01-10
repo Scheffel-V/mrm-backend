@@ -130,6 +130,33 @@ exports.findOne = (req, res) => {
 
 exports.deleteOne = async (req, res) => {
   if (await isInvalidId(req, res, db.rentContract)) return;
+
+  const filter = {
+    where: { id: req.params.id },
+    include: [
+      {
+        model: db.itemRental,
+        include: [db.stockItem]
+      }
+    ]
+  };
+
+  var rentContract = await db.rentContract.findOne(filter);
+  var itemRentals = rentContract.itemRentals;
+  for(var i = 0; i < itemRentals.length; i++) {
+    db.stockItem.update({
+      status: "INVENTORY"
+    }, {
+      where: {
+        id: itemRentals[i].stockItemId
+      }
+    });
+    db.stockItemEvent.create({
+      stockItemId: itemRentals[i].stockItemId,
+      status: "INVENTORY"
+    })
+  };
+
   db.itemRental.destroy({
     where: {rentContractId: req.params.id}
   }).then(() => {
@@ -137,31 +164,6 @@ exports.deleteOne = async (req, res) => {
       where: {id: req.params.id}
     })
     .then(async () => {
-      const filter = {
-        where: { id: req.params.id },
-        include: [
-          {
-            model: db.itemRental,
-            include: [db.stockItem]
-          }
-        ]
-      };
-    
-      var rentContract = await db.rentContract.findOne(filter);
-      var itemRentals = rentContract.itemRentals;
-      for(var i = 0; i < itemRentals.length; i++) {
-        db.stockItem.update({
-          status: "INVENTORY"
-        }, {
-          where: {
-            id: itemRentals[i].stockItemId
-          }
-        });
-        db.stockItemEvent.create({
-          stockItemId: itemRentals[i].stockItemId,
-          status: "INVENTORY"
-        })
-      };
 
       res.status(StatusCodes.OK);
       res.send()
