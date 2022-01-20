@@ -52,6 +52,6 @@ function addRoutesToTheApp() {
   app.use("/api/additives", authenticateToken, additiveRoute);
   app.use("/api/image", authenticateToken, imageRoute);
   app.use("/api/authentication", authenticationRoute);
-  app.use("/db", authenticateToken, dbRoute);
+  app.use("/db", dbRoute);
   logger.info("Routes successfully added");
 }

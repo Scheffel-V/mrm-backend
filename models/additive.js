@@ -38,7 +38,9 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     status: DataTypes.STRING,
-    comment: DataTypes.TEXT
+    comment: DataTypes.TEXT,
+    invoiceComment: DataTypes.TEXT,
+    purchaseOrderNumber: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'additive',
