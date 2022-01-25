@@ -8,10 +8,6 @@ const morgan = require('morgan');
 const logger = require("./utils/logger");
 require("dotenv-safe").config();
 const jwt = require('jsonwebtoken');
-const https = require('https');
-const privateKey  = fs.readFileSync('/etc/letsencrypt/live/gma-admin.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/gma-admin.com/fullchain.pem', 'utf8');
-const credentials = {key: privateKey, cert: certificate};
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -37,12 +33,8 @@ addRoutesToTheApp();
 
 // sync db and then starts listening to  port
 db.sequelize.sync().then(() => {
-  //app.listen(PORT, () => {
-  //  logger.info(`listening on: http://localhost:${PORT}`);
-  //});
-  var httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(PORT, () => {
-    logger.info(`listening on: https://localhost:${PORT}`);
+  app.listen(PORT, () => {
+    logger.info(`listening on: http://localhost:${PORT}`);
   });
 });
 
