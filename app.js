@@ -41,7 +41,9 @@ db.sequelize.sync().then(() => {
   //  logger.info(`listening on: http://localhost:${PORT}`);
   //});
   var httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(PORT);
+  httpsServer.listen(PORT, () => {
+    logger.info(`listening on: https://localhost:${PORT}`);
+  });
 });
 
 
