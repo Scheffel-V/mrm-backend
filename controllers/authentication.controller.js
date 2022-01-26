@@ -7,6 +7,9 @@ const jwt = require('jsonwebtoken');
 
 
 exports.login = async (req, res) => {
+  console.log("CHEGUEI NO LOGIN!");
+  console.log(req);
+
   if (authenticateUser(req.body.username, req.body.password)) {
     const id = 1;
     const token = generateAccessToken(id);
