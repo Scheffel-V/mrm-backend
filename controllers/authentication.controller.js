@@ -28,6 +28,7 @@ exports.logout = async (req, res) => {
 };
 
 exports.authenticateToken = (req, res, next) => {
+    console.log(req.headers);
     const authHeader = req.headers['authorization']
     const token = authHeader.split(' ')[1]
 
