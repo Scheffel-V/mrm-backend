@@ -17,7 +17,7 @@ exports.login = async (req, res) => {
     return res.json({ 
         auth: true, 
         token: token,
-        expiresIn: 1800 });
+        expiresIn: 10800 });
   }
     
   res.status(401).json({message: 'Nome de Usuário ou Senha inválidos!'});
