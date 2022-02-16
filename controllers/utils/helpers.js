@@ -33,7 +33,7 @@ exports.get_new_invoice_number = async () => {
   `
 
   maxInvoiceNumber = await executeSelect(query);
-  newInvoiceNumber = maxInvoiceNumber[0].greatest == null ? 246 : maxInvoiceNumber[0].greatest + 1
+  newInvoiceNumber = maxInvoiceNumber[0].greatest == null ? 1013 : maxInvoiceNumber[0].greatest + 1
   return newInvoiceNumber;
 }
 
