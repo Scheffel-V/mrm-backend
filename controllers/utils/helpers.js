@@ -46,7 +46,7 @@ exports.get_new_contract_number = async () => {
   `
 
   maxContractNumber = await executeSelect(query);
-  newContractNumber = maxContractNumber[0].max == null ? 100 : maxContractNumber[0].max + 1
+  newContractNumber = maxContractNumber[0].max == null ? 352 : maxContractNumber[0].max + 1
   return newContractNumber;
 }
 
