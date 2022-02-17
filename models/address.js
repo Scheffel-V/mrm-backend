@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
     neighborhood: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    complement: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     sequelize,

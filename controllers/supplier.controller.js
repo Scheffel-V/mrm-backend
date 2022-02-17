@@ -5,6 +5,8 @@ const { hasInvalidQuery } = require("./utils/queryValidator");
 const { isInvalidId, isIdNotPresent } = require("./utils/genericBodyValidator");
 const { addXTotalCount } = require("./utils/headerHelper");
 
+const addressModel = db.address;
+
 
 exports.create = (req, res) => {
   db.supplier.create({
@@ -20,7 +22,8 @@ exports.create = (req, res) => {
       cep: req.body.address.cep,
       city: req.body.address.city,
       number: req.body.address.number,
-      neighborhood: req.body.address.neighborhood
+      neighborhood: req.body.address.neighborhood,
+      complement: req.body.address.complement
     }
   }, { include: [db.address] }).then(createdItem => {
     res.status(StatusCodes.CREATED);
@@ -89,6 +92,11 @@ exports.update = async (req, res) => {
   if (await isInvalidId(req, res, db.supplier)) return;
  
   const filter = {
+    include: [
+      {
+        model: db.address
+      }
+    ],
     where: { id: req.params.id }
   };
 
@@ -103,6 +111,23 @@ exports.update = async (req, res) => {
     active: req.body.active,
     comment: req.body.comment,
   }
+
+  const addressNewAttributes = {
+    street: req.body.address.street,
+    cep: req.body.address.cep,
+    city: req.body.address.city,
+    number: req.body.address.number,
+    neighborhood: req.body.address.neighborhood,
+    complement: req.body.address.complement
+  }
+
+  const addresFilter = {
+    where: { id: supplier.address.id }
+  };
+
+  var address = await addressModel.findOne(addresFilter);  
+
+  address.update(addressNewAttributes);
 
   supplier.update(newAttributes)
   .then(updatedItem => {

@@ -9,6 +9,7 @@ const { addXTotalCount } = require("./utils/headerHelper");
 const helpers = require("./utils/helpers")
 const {getClientsAndDebts, getClientsAndTotalDaysInDebt} = require("../dao/customerDAO")
 const model = db.customer;
+const addressModel = db.address;
 
 // create new customer
 exports.create = (req, res) => {
@@ -25,7 +26,8 @@ exports.create = (req, res) => {
       cep: req.body.address.cep,
       city: req.body.address.city,
       number: req.body.address.number,
-      neighborhood: req.body.address.neighborhood
+      neighborhood: req.body.address.neighborhood,
+      complement: req.body.address.complement
     }
   }, { include: [db.address] }).then(createdCustomer => {
     res.status(StatusCodes.CREATED);
@@ -149,7 +151,6 @@ exports.deleteAll = (req, res) => {
   }).then(() => res.send());
 };
 
-// edit a address
 exports.update = async (req, res) => {
 
   if (isIdNotPresent(req, res)) return;
@@ -174,6 +175,23 @@ exports.update = async (req, res) => {
     email: req.body.email,
     active: req.body.active
   }
+
+  const addressNewAttributes = {
+      street: req.body.address.street,
+      cep: req.body.address.cep,
+      city: req.body.address.city,
+      number: req.body.address.number,
+      neighborhood: req.body.address.neighborhood,
+      complement: req.body.address.complement
+  }
+
+  const addresFilter = {
+    where: { id: customer.address.id }
+  };
+
+  var address = await addressModel.findOne(addresFilter);  
+
+  address.update(addressNewAttributes);
 
   customer.update(newAttributes)
   .then(updatedItem => {
