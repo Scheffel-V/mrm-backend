@@ -89,7 +89,10 @@ exports.findAll = (req, res) => {
     order: [
       ['id', 'DESC']
     ],
-    include: [db.customer]
+    include: [
+      db.customer,
+      db.additive,
+    ]
   })
   .then(items => {
     res.headers = addXTotalCount(res, items.length);
