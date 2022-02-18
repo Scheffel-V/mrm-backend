@@ -130,7 +130,7 @@ exports.update = async (req, res) => {
     comment: req.body.comment,
     invoiceComment: req.body.invoiceComment,
     purchaseOrderNumber: req.body.purchaseOrderNumber,
-    invoiceNumber: additive.invoiceNumber,
+    invoiceNumber: req.body.invoiceNumber,
     invoiceStatus: req.body.invoiceStatus,
     invoiceUrl: req.body.invoiceUrl,
     paymentType: req.body.paymentType,
