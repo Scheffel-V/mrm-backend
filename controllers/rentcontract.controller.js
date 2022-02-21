@@ -515,3 +515,42 @@ exports.setFinishedByStockItemId = async (req, res) => {
     };
   };
 }
+
+exports.setItemRentalReturnedAtByStockItemId = async (req, res) => {
+  console.log("\n [1 UPDATE ITEM RENTAL]")
+  var activeRentContracts = await db.rentContract.findAll({
+    where: {
+      status: {
+        [Op.or]: ["APPROVED", "ON GOING"]
+      },
+      active: {
+        [Op.eq]: true
+      }
+    },
+    include: [
+      {
+        model: db.itemRental,
+        include: [db.stockItem]
+      }
+    ]
+  });
+
+  for (var i = 0; i < activeRentContracts.length; i++) {
+    console.log("\n [2 UPDATE ITEM RENTAL] Rent Contract ID:" + activeRentContracts[i].id)
+    var itemRentals = activeRentContracts[i].itemRentals;
+    for(var j = 0; j < itemRentals.length; j++) {
+      console.log("\n [3 UPDATE ITEM RENTAL] Item Rental ID:" + itemRentals[j].id)
+      if (itemRentals[j].stockItemId == req.stockItemId && itemRentals[j].returnedAt === null) {
+        const filter = {
+          where: { id: itemRentals[j].id }
+        };
+      
+        var itemRental = await db.itemRental.findOne(filter);
+        console.log("\n [4 UPDATE ITEM RENTAL] ID: " + itemRentals[j].id)
+        await itemRental.update({
+          returnedAt: new Date()
+        })
+      }
+    };
+  };
+}

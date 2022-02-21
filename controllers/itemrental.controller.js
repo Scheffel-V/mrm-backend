@@ -115,8 +115,8 @@ exports.update = async (req, res) => {
   var itemRental = await db.itemRental.findOne(filter);
 
   const newAttributes = {
-    startDate: req.body.startDate || itemRental.startDate,
-    endDate: req.body.endDate || itemRental.endDate,
+    leftAt: req.body.leftAt || itemRental.leftAt,
+    returnedAt: req.body.returnedAt || itemRental.returnedAt,
     value: req.body.value || itemRental.value,
     stockItemId: req.body.stockItemId || itemRental.stockItemId,
     rentContractId: req.body.rentContractId || itemRental.rentContractId,

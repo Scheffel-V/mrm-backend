@@ -4,7 +4,7 @@ const handleApiError = require("./utils/apiErrorHandler");
 const { hasInvalidQuery } = require("./utils/queryValidator");
 const { isInvalidId, isIdNotPresent, getModelValueIfUndefined } = require("./utils/genericBodyValidator");
 const { addXTotalCount } = require("./utils/headerHelper");
-const { setOnGoingByStockItemId, setFinishedByStockItemId } = require("./rentcontract.controller");
+const { setOnGoingByStockItemId, setFinishedByStockItemId, setItemRentalReturnedAtByStockItemId } = require("./rentcontract.controller");
 
 exports.create = (req, res) => {
   db.stockItem.create({
@@ -143,6 +143,11 @@ exports.update = async (req, res) => {
       });
     }
 
+    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE") && updatedItem.status === "INVENTORY") {
+      console.log("\n [0 UPDATE ITEM RENTAL]")
+      await setItemRentalReturnedAtByStockItemId({ stockItemId: updatedItem.id });
+    }
+
     if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
       await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
     } else if (oldStatus == "CUSTOMER" && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE")) {
@@ -241,6 +246,11 @@ exports.updateByCode = async (req, res) => {
         comment: req.body.statusComment,
         stockItemId: updatedItem.id
       });
+    }
+
+    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE") && updatedItem.status === "INVENTORY") {
+      console.log("\n [0 UPDATE ITEM RENTAL] ID: " + itemRentals[j].id)
+      await setItemRentalReturnedAtByStockItemId({ stockItemId: updatedItem.id });
     }
 
     if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
