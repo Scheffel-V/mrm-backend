@@ -29,7 +29,8 @@ exports.create = async (req, res) => {
     paymentComment: req.body.paymentComment,
     contractNumber: await helpers.get_contract_number_from_rent_contract(req.body.rentContractId),
     installments: req.body.installments,
-    period: req.body.period
+    period: req.body.period,
+    invoicedAt: req.body.invoicedAt
   }).then(async (createdItem) => {
     var rentContract = await db.rentContract.findOne({where: {id: createdItem.rentContractId}});
     await rentContract.update({
@@ -137,7 +138,8 @@ exports.update = async (req, res) => {
     paymentComment: req.body.paymentComment,
     contractNumber: additive.contractNumber,
     installments: req.body.installments,
-    period: req.body.period
+    period: req.body.period,
+    invoicedAt: req.body.invoicedAt
   }
 
   additive.update(newAttributes)

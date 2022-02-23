@@ -53,7 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.STRING,
     comment: DataTypes.TEXT,
     invoiceComment: DataTypes.TEXT,
-    purchaseOrderNumber: DataTypes.STRING
+    purchaseOrderNumber: DataTypes.STRING,
+    invoicedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'rentContract',
