@@ -113,11 +113,17 @@ exports.update = async (req, res) => {
   };
 
   var itemRental = await db.itemRental.findOne(filter);
+  var newValue = req.body.value;
+
+  if (newValue === null || newValue === undefined) {
+    newValue = itemRental.value;
+  } 
+  
 
   const newAttributes = {
     leftAt: req.body.leftAt || itemRental.leftAt,
     returnedAt: req.body.returnedAt || itemRental.returnedAt,
-    value: req.body.value || itemRental.value,
+    value: newValue,
     stockItemId: req.body.stockItemId || itemRental.stockItemId,
     rentContractId: req.body.rentContractId || itemRental.rentContractId,
     comment: req.body.comment || itemRental.comment
