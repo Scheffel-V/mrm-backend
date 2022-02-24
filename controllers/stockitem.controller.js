@@ -143,14 +143,14 @@ exports.update = async (req, res) => {
       });
     }
 
-    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE") && updatedItem.status === "INVENTORY") {
+    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE" && oldStatus !== "RESERVED") && updatedItem.status === "INVENTORY") {
       console.log("\n [0 UPDATE ITEM RENTAL]")
       await setItemRentalReturnedAtByStockItemId({ stockItemId: updatedItem.id });
     }
 
     if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
       await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
-    } else if (oldStatus == "CUSTOMER" && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE")) {
+    } else if ((oldStatus == "CUSTOMER" || oldStatus == "RENTED" || oldStatus == "READY_FOR_RENTAL") && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE" || updatedItem.status == "RESERVED")) {
       await setFinishedByStockItemId({ stockItemId: updatedItem.id });
     }
 
@@ -248,14 +248,14 @@ exports.updateByCode = async (req, res) => {
       });
     }
 
-    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE") && updatedItem.status === "INVENTORY") {
+    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE" && oldStatus !== "RESERVED") && updatedItem.status === "INVENTORY") {
       console.log("\n [0 UPDATE ITEM RENTAL] ID: " + itemRentals[j].id)
       await setItemRentalReturnedAtByStockItemId({ stockItemId: updatedItem.id });
     }
 
     if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
       await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
-    } else if (oldStatus == "CUSTOMER" && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE")) {
+    } else if ((oldStatus == "CUSTOMER" || oldStatus == "RENTED" || oldStatus == "READY_FOR_RENTAL") && (updatedItem.status == "INVENTORY" || updatedItem.status == "MAINTENANCE" || updatedItem.status == "RESERVED")) {
       await setFinishedByStockItemId({ stockItemId: updatedItem.id });
     }
 
