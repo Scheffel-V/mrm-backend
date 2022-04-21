@@ -54,7 +54,14 @@ module.exports = (sequelize, DataTypes) => {
     comment: DataTypes.TEXT,
     invoiceComment: DataTypes.TEXT,
     purchaseOrderNumber: DataTypes.STRING,
-    invoicedAt: DataTypes.DATE
+    invoicedAt: DataTypes.DATE,
+    laborAndDisplacementPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      get() {
+        const value = this.getDataValue('laborAndDisplacementPrice');
+        return value === null ? null : parseFloat(value);
+      }
+    }
   }, {
     sequelize,
     modelName: 'rentContract',

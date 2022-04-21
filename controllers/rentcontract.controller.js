@@ -54,7 +54,8 @@ exports.create = async (req, res) => {
     additivesEndDate: req.body.additivesEndDate,
     deliveryCost: req.body.deliveryCost,
     itemRentals: itemRentals,
-    invoicedAt: req.body.invoicedAt
+    invoicedAt: req.body.invoicedAt,
+    laborAndDisplacementPrice: req.body.laborAndDisplacementPrice
   }, {
     include: [db.itemRental]
   }).then(createdItem => {
@@ -226,7 +227,8 @@ exports.update = async (req, res) => {
     installments: req.body.installments,
     additivesEndDate: req.body.additivesEndDate,
     deliveryCost: req.body.deliveryCost,
-    invoicedAt: req.body.invoicedAt
+    invoicedAt: req.body.invoicedAt,
+    laborAndDisplacementPrice: req.body.laborAndDisplacementPrice
   }
 
   rentContract.update(newAttributes)
