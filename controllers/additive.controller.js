@@ -22,7 +22,8 @@ exports.create = async (req, res) => {
     invoiceComment: req.body.invoiceComment,
     purchaseOrderNumber: req.body.purchaseOrderNumber,
     rentContractId: req.body.rentContractId,
-    invoiceNumber: await helpers.get_new_invoice_number(),
+    //invoiceNumber: await helpers.get_new_invoice_number(),
+    invoiceNumber: null,
     invoiceStatus: req.body.invoiceStatus,
     invoiceUrl: req.body.invoiceUrl,
     paymentType: req.body.paymentType,
@@ -140,6 +141,10 @@ exports.update = async (req, res) => {
     installments: req.body.installments,
     period: req.body.period,
     invoicedAt: req.body.invoicedAt
+  }
+
+  if (newAttributes.invoiceNumber === null && newAttributes.invoiceStatus === "INVOICED") {
+    newAttributes.invoiceNumber = await helpers.get_new_invoice_number();
   }
 
   additive.update(newAttributes)

@@ -43,7 +43,8 @@ exports.create = async (req, res) => {
     purchaseOrderNumber: req.body.purchaseOrderNumber,
     paymentType: req.body.paymentType,
     contractNumber: await helpers.get_new_contract_number(),
-    invoiceNumber: await helpers.get_new_invoice_number(),
+    //invoiceNumber: await helpers.get_new_invoice_number(),
+    invoiceNumber: null,
     invoiceStatus: req.body.invoiceStatus,
     invoiceUrl: req.body.invoiceUrl,
     paymentComment: req.body.paymentComment,
@@ -229,6 +230,10 @@ exports.update = async (req, res) => {
     deliveryCost: req.body.deliveryCost,
     invoicedAt: req.body.invoicedAt,
     laborAndDisplacementPrice: req.body.laborAndDisplacementPrice
+  }
+
+  if (newAttributes.invoiceNumber === null && newAttributes.invoiceStatus === "INVOICED") {
+    newAttributes.invoiceNumber = await helpers.get_new_invoice_number();
   }
 
   rentContract.update(newAttributes)
