@@ -563,3 +563,32 @@ exports.setItemRentalReturnedAtByStockItemId = async (req, res) => {
     };
   };
 }
+
+exports.getInvoicedValueInCurrentMonth = async (req, res) => {
+  rentContractsRevenueCurrentMonth = await db.rentContract.sum("value", {
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().startOf("month") },
+          { [Op.lte]: moment().endOf("month") }
+        ]
+      }
+    }
+  });
+
+  additivesRevenueCurrentMonth = await db.additive.sum("value", {
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().startOf("month") },
+          { [Op.lte]: moment().endOf("month") }
+        ]
+      }
+    }
+  });
+
+  result = {
+    "current_month_invoiced_value": rentContractsRevenueCurrentMonth + additivesRevenueCurrentMonth,
+  }
+  res.send(result)
+}
