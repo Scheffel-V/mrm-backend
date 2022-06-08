@@ -9,6 +9,38 @@ const { isInvalidId, isIdNotPresent } = require("./utils/genericBodyValidator");
 const { addXTotalCount } = require("./utils/headerHelper");
 const { getActive } = require("./rentcontract.controller");
 
+getPortugueseStatus = (status) => {
+  if (status === "PAID") {
+    return "Pago";
+  }
+
+  if (status === "INVOICED") {
+    return "Faturado";
+  }
+
+  if (status === "OVERDUE") {
+    return "Vencido";
+  }
+
+  if (status === "PENDING") {
+    return "Pendente";
+  }
+  
+  return status;
+}
+
+compare = ( a, b ) => {
+  if (a.Numero < b.Numero){
+    return -1;
+  }
+
+  if (a.Numero > b.Numero){
+    return 1;
+  }
+
+  return 0;
+}
+
 exports.create = async (req, res) => {
   var itemRentals = [];
   if(req.body.itemRentals) {
@@ -564,7 +596,7 @@ exports.setItemRentalReturnedAtByStockItemId = async (req, res) => {
   };
 }
 
-exports.getInvoicedValueInCurrentMonth = async (req, res) => {
+exports.getInvoicedValue = async (req, res) => {
   rentContractsRevenueCurrentMonth = await db.rentContract.sum("value", {
     where: {
       invoicedAt: {
@@ -587,8 +619,174 @@ exports.getInvoicedValueInCurrentMonth = async (req, res) => {
     }
   });
 
+  rentContractsRevenueLastMonth = await db.rentContract.sum("value", {
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().subtract(1, 'month').startOf("month") },
+          { [Op.lte]: moment().subtract(1, 'month').endOf("month") }
+        ]
+      }
+    }
+  });
+
+  additivesRevenueLastMonth = await db.additive.sum("value", {
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().subtract(1, 'month').startOf("month") },
+          { [Op.lte]: moment().subtract(1, 'month').endOf("month") }
+        ]
+      }
+    }
+  });
+
   result = {
     "current_month_invoiced_value": rentContractsRevenueCurrentMonth + additivesRevenueCurrentMonth,
+    "last_month_invoiced_value": rentContractsRevenueLastMonth + additivesRevenueLastMonth,
   }
+
+  res.send(result)
+}
+
+exports.getInvoicesFromCurrentMonth = async (req, res) => {
+  rentContractsInvoicedInCurrentMonth = await db.rentContract.findAll({
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().startOf("month") },
+          { [Op.lte]: moment().endOf("month") }
+        ]
+      }
+    },
+    include: [
+      {
+        model: db.customer
+      }
+    ]
+  });
+
+  additivesInvoicedInCurrentMonth = await db.additive.findAll({
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().startOf("month") },
+          { [Op.lte]: moment().endOf("month") }
+        ]
+      }
+    },
+    include: [
+      {
+        model: db.rentContract,
+        include: [db.customer]
+      }
+    ]
+  });
+
+  var data = [];
+
+  for (var i = 0; i < rentContractsInvoicedInCurrentMonth.length; i++) {
+    var rentContractData = {};
+
+    rentContractData["Numero"] = rentContractsInvoicedInCurrentMonth[i].invoiceNumber;
+    var invoicedAt = new Date(rentContractsInvoicedInCurrentMonth[i].invoicedAt);
+    rentContractData["Emissao"] = invoicedAt.getDate() + "/" + (invoicedAt.getMonth() + 1)  + "/" + invoicedAt.getFullYear();
+    rentContractData["Valor"] = rentContractsInvoicedInCurrentMonth[i].value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
+    rentContractData["Cliente"] = rentContractsInvoicedInCurrentMonth[i].customer.name;
+    rentContractData["Contrato"] = rentContractsInvoicedInCurrentMonth[i].contractNumber;
+    rentContractData["Aditivo"] = 0;
+    rentContractData["Status"] = getPortugueseStatus(rentContractsInvoicedInCurrentMonth[i].invoiceStatus);
+
+    data.push(rentContractData);
+  }
+
+  for (var i = 0; i < additivesInvoicedInCurrentMonth.length; i++) {
+    var additiveData = {};
+
+    additiveData["Numero"] = additivesInvoicedInCurrentMonth[i].invoiceNumber;
+    var invoicedAt = new Date(additivesInvoicedInCurrentMonth[i].invoicedAt);
+    additiveData["Emissao"] = invoicedAt.getDate() + "/" + (invoicedAt.getMonth() + 1)  + "/" + invoicedAt.getFullYear();
+    additiveData["Valor"] = additivesInvoicedInCurrentMonth[i].value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
+    additiveData["Cliente"] = additivesInvoicedInCurrentMonth[i].rentContract.customer.name;
+    additiveData["Contrato"] = additivesInvoicedInCurrentMonth[i].contractNumber;
+    additiveData["Aditivo"] = additivesInvoicedInCurrentMonth[i].additiveNumber;
+    additiveData["Status"] = getPortugueseStatus(additivesInvoicedInCurrentMonth[i].invoiceStatus);
+
+    data.push(additiveData);
+  }
+
+  result = data.sort( compare );
+
+  res.send(result)
+}
+
+exports.getInvoicesFromLastMonth = async (req, res) => {
+  rentContractsInvoicedInCurrentMonth = await db.rentContract.findAll({
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().subtract(1, 'month').startOf("month") },
+          { [Op.lte]: moment().subtract(1, 'month').endOf("month") }
+        ]
+      }
+    },
+    include: [
+      {
+        model: db.customer
+      }
+    ]
+  });
+
+  additivesInvoicedInCurrentMonth = await db.additive.findAll({
+    where: {
+      invoicedAt: {
+        [Op.and]: [
+          { [Op.gte]: moment().subtract(1, 'month').startOf("month") },
+          { [Op.lte]: moment().subtract(1, 'month').endOf("month") }
+        ]
+      }
+    },
+    include: [
+      {
+        model: db.rentContract,
+        include: [db.customer]
+      }
+    ]
+  });
+
+  var data = [];
+
+  for (var i = 0; i < rentContractsInvoicedInCurrentMonth.length; i++) {
+    var rentContractData = {};
+
+    rentContractData["Numero"] = rentContractsInvoicedInCurrentMonth[i].invoiceNumber;
+    var invoicedAt = new Date(rentContractsInvoicedInCurrentMonth[i].invoicedAt);
+    rentContractData["Emissao"] = invoicedAt.getDate() + "/" + (invoicedAt.getMonth() + 1) + "/" + invoicedAt.getFullYear();
+    rentContractData["Valor"] = rentContractsInvoicedInCurrentMonth[i].value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
+    rentContractData["Cliente"] = rentContractsInvoicedInCurrentMonth[i].customer.name;
+    rentContractData["Contrato"] = rentContractsInvoicedInCurrentMonth[i].contractNumber;
+    rentContractData["Aditivo"] = 0;
+    rentContractData["Status"] = getPortugueseStatus(rentContractsInvoicedInCurrentMonth[i].invoiceStatus);
+
+    data.push(rentContractData);
+  }
+
+  for (var i = 0; i < additivesInvoicedInCurrentMonth.length; i++) {
+    var additiveData = {};
+
+    additiveData["Numero"] = additivesInvoicedInCurrentMonth[i].invoiceNumber;
+    var invoicedAt = new Date(additivesInvoicedInCurrentMonth[i].invoicedAt);
+    additiveData["Emissao"] = invoicedAt.getDate() + "/" + (invoicedAt.getMonth() + 1) + "/" + invoicedAt.getFullYear();
+    additiveData["Valor"] = additivesInvoicedInCurrentMonth[i].value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
+    additiveData["Cliente"] = additivesInvoicedInCurrentMonth[i].rentContract.customer.name;
+    additiveData["Contrato"] = additivesInvoicedInCurrentMonth[i].contractNumber;
+    additiveData["Aditivo"] = additivesInvoicedInCurrentMonth[i].additiveNumber;
+    additiveData["Status"] = getPortugueseStatus(additivesInvoicedInCurrentMonth[i].invoiceStatus);
+
+    data.push(additiveData);
+  }
+
+  result = data.sort( compare );
+
   res.send(result)
 }
