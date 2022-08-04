@@ -133,6 +133,10 @@ exports.update = async (req, res) => {
 
   const oldStatus = stockItem.status;
 
+  if (oldStatus === "RENTED" && newAttributes.status === "READY_FOR_RENTAL") {
+    newAttributes.status = "RENTED";
+  }
+  
   stockItem.update(newAttributes)
   .then(async updatedItem => {
     if(oldStatus != updatedItem.status) {
@@ -143,12 +147,11 @@ exports.update = async (req, res) => {
       });
     }
 
-    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE" && oldStatus !== "RESERVED") && updatedItem.status === "INVENTORY") {
-      console.log("\n [0 UPDATE ITEM RENTAL]")
+    if ((oldStatus === "RENTED" || oldStatus === "CUSTOMER") && updatedItem.status === "INVENTORY") {
       await setItemRentalReturnedAtByStockItemId({ stockItemId: updatedItem.id });
     }
 
-    if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
+    if ((oldStatus == "RENTED") && updatedItem.status == "CUSTOMER") {
       await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
     }
 
@@ -236,6 +239,10 @@ exports.updateByCode = async (req, res) => {
 
   const oldStatus = stockItem.status;
 
+  if (oldStatus === "RENTED" && newAttributes.status === "READY_FOR_RENTAL") {
+    newAttributes.status = "RENTED";
+  }
+
   stockItem.update(newAttributes)
   .then(async updatedItem => {
     if(oldStatus != updatedItem.status) {
@@ -246,12 +253,12 @@ exports.updateByCode = async (req, res) => {
       });
     }
 
-    if ((oldStatus !== "INVENTORY" && oldStatus !== "MAINTENANCE" && oldStatus !== "RESERVED") && updatedItem.status === "INVENTORY") {
-      console.log("\n [0 UPDATE ITEM RENTAL]")
+    if ((oldStatus === "RENTED" || oldStatus === "CUSTOMER") && 
+      (updatedItem.status === "INVENTORY" || updatedItem.status === "READY_FOR_RENTAL")) {
       await setItemRentalReturnedAtByStockItemId({ stockItemId: updatedItem.id });
     }
 
-    if (oldStatus == "RENTED" && updatedItem.status == "CUSTOMER") {
+    if ((oldStatus == "RENTED") && updatedItem.status == "CUSTOMER") {
       await setOnGoingByStockItemId({ stockItemId: updatedItem.id });
     }
 

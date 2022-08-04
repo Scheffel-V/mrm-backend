@@ -284,17 +284,23 @@ exports.update = async (req, res) => {
       var rentContract = await db.rentContract.findOne(filter);
       var itemRentals = rentContract.itemRentals;
       for(var i = 0; i < itemRentals.length; i++) {
-        db.stockItem.update({
-          status: "INVENTORY"
-        }, {
-          where: {
-            id: itemRentals[i].stockItemId
-          }
-        });
-        db.stockItemEvent.create({
-          stockItemId: itemRentals[i].stockItemId,
-          status: "INVENTORY"
-        })
+        if (itemRentals[i].returnedAt === null) {
+          console.log("\n [(I) UPDATE STOCK ITEM FOR ITEM RENTAL IS NOT RETURNED AT]")
+          
+          db.stockItem.update({
+            status: "INVENTORY"
+          }, {
+            where: {
+              id: itemRentals[i].stockItemId
+            }
+          });
+          db.stockItemEvent.create({
+            stockItemId: itemRentals[i].stockItemId,
+            status: "INVENTORY"
+          })
+        } else {
+          console.log("\n [(II) NOT UPDATE STOCK ITEM FOR ITEM RENTAL IS RETURNED AT]")
+        }
       };
     }
     res.status(StatusCodes.CREATED);
