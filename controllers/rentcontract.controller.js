@@ -88,7 +88,8 @@ exports.create = async (req, res) => {
     deliveryCost: req.body.deliveryCost,
     itemRentals: itemRentals,
     invoicedAt: req.body.invoicedAt,
-    laborAndDisplacementPrice: req.body.laborAndDisplacementPrice
+    laborAndDisplacementPrice: req.body.laborAndDisplacementPrice,
+    addressToDeliver: req.body.addressToDeliver
   }, {
     include: [db.itemRental]
   }).then(createdItem => {
@@ -261,7 +262,8 @@ exports.update = async (req, res) => {
     additivesEndDate: req.body.additivesEndDate,
     deliveryCost: req.body.deliveryCost,
     invoicedAt: req.body.invoicedAt,
-    laborAndDisplacementPrice: req.body.laborAndDisplacementPrice
+    laborAndDisplacementPrice: req.body.laborAndDisplacementPrice,
+    addressToDeliver: req.body.addressToDeliver
   }
 
   if (newAttributes.invoiceNumber === null && newAttributes.invoiceStatus === "INVOICED") {

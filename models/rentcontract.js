@@ -61,7 +61,8 @@ module.exports = (sequelize, DataTypes) => {
         const value = this.getDataValue('laborAndDisplacementPrice');
         return value === null ? null : parseFloat(value);
       }
-    }
+    },
+    addressToDeliver: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'rentContract',
