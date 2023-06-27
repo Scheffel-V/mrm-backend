@@ -248,7 +248,7 @@ exports.updateByCode = async (req, res) => {
     if(oldStatus != updatedItem.status) {
       db.stockItemEvent.create({
         status: updatedItem.status,
-        comment: req.body.statusComment,
+        comment: req.body.comment,
         stockItemId: updatedItem.id
       });
     }
