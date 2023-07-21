@@ -31,7 +31,8 @@ exports.create = async (req, res) => {
     contractNumber: await helpers.get_contract_number_from_rent_contract(req.body.rentContractId),
     installments: req.body.installments,
     period: req.body.period,
-    invoicedAt: req.body.invoicedAt
+    invoicedAt: req.body.invoicedAt,
+    entryValue: req.body.entryValue,
   }).then(async (createdItem) => {
     var rentContract = await db.rentContract.findOne({where: {id: createdItem.rentContractId}});
     await rentContract.update({
@@ -140,7 +141,8 @@ exports.update = async (req, res) => {
     contractNumber: additive.contractNumber,
     installments: req.body.installments,
     period: req.body.period,
-    invoicedAt: req.body.invoicedAt
+    invoicedAt: req.body.invoicedAt,
+    entryValue: req.body.entryValue,
   }
 
   if (newAttributes.invoiceNumber === null && newAttributes.invoiceStatus === "INVOICED") {

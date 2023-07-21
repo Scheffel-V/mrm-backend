@@ -41,7 +41,14 @@ module.exports = (sequelize, DataTypes) => {
     comment: DataTypes.TEXT,
     invoiceComment: DataTypes.TEXT,
     purchaseOrderNumber: DataTypes.STRING,
-    invoicedAt: DataTypes.DATE
+    invoicedAt: DataTypes.DATE,
+    entryValue: {
+      type: DataTypes.DECIMAL(10, 2),
+      get() {
+        const value = this.getDataValue('entryValue');
+        return value === null ? null : parseFloat(value);
+      }
+    },
   }, {
     sequelize,
     modelName: 'additive',
