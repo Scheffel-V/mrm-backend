@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.customer);
       this.hasMany(models.itemRental);
       this.hasMany(models.additive);
+      this.hasMany(models.pdfContract);
     }
   };
 

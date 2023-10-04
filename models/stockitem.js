@@ -50,7 +50,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true
     },
-    comment: DataTypes.STRING
+    comment: DataTypes.STRING,
+    //commentHistory:DataTypes.ARRAY(DataTypes.STRING)
   }, {
     sequelize,
     modelName: 'stockItem',

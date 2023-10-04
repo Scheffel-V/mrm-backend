@@ -25,6 +25,7 @@ const stockItemEventRoute = require("./routes/stockitemevent.route");
 const itemRentalRoute = require("./routes/itemrental.route");
 const additiveRoute = require("./routes/additive.route");
 const imageRoute = require("./routes/image.route");
+const pdfContractRoute = require("./routes/pdfcontract.route");
 const authenticationRoute = require("./routes/authentication.route");
 const dbRoute = require("./routes/db.route");
 const { authenticateToken } = require("./controllers/authentication.controller");
@@ -52,6 +53,7 @@ function addRoutesToTheApp() {
   app.use("/api/itemrentals", authenticateToken, itemRentalRoute);
   app.use("/api/additives", authenticateToken, additiveRoute);
   app.use("/api/image", authenticateToken, imageRoute);
+  app.use("/api/pdfContract", authenticateToken, pdfContractRoute);
   app.use("/api/authentication", authenticationRoute);
   app.use("/db", dbRoute);
   logger.info("Routes successfully added");

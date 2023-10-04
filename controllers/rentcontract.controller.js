@@ -147,6 +147,7 @@ exports.findOne = (req, res) => {
     include: [
       db.customer,
       db.additive,
+      db.pdfContract,
       {
         model: db.itemRental,
         include: [db.stockItem]
