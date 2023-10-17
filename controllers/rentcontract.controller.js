@@ -180,12 +180,17 @@ exports.deleteOne = async (req, res) => {
       {
         model: db.itemRental,
         include: [db.stockItem]
+      },
+      {
+        model: db.pdfContract
       }
     ]
   };
 
   var rentContract = await db.rentContract.findOne(filter);
   var itemRentals = rentContract.itemRentals;
+  var pdfContracts = rentContract.pdfContracts;
+
   for(var i = 0; i < itemRentals.length; i++) {
     db.stockItem.update({
       status: "INVENTORY"
@@ -199,6 +204,24 @@ exports.deleteOne = async (req, res) => {
       status: "INVENTORY"
     })
   };
+
+  this.deletePdfContractFiles = function (pdfContracts) {
+    const fs = require('fs');
+    for (var i = 0; i < pdfContracts.length; i++) {
+      fs.rm(pdfContracts[i].contractUrl, (err) =>{
+        if (err) {
+          console.log(err);
+        };
+      });
+      console.log('Removed contract with path:' + pdfContracts[i].contractUrl);
+    }
+  };
+
+  await db.pdfContract.destroy({
+    where: {rentContractId: req.params.id}
+  }).then(() => {
+    this.deletePdfContractFiles(pdfContracts);
+  });
 
   db.itemRental.destroy({
     where: {rentContractId: req.params.id}
